@@ -18,7 +18,7 @@ def question_continue():
 def main():
 	print '[+] Loading toturial...'
 	#"https://www.englishlistening.com/index.php/listen-to-passages/"
-	link = ["hoc.elight.edu.vn", "rong-chang.com/supereasy/", "http://www.talkenglish.com/speaking/listidioms.aspx", "http://www.talkenglish.com/speaking/listinterview.aspx", "http://www.talkenglish.com/grammar/grammar.aspx", "http://www.talkenglish.com/speaking/listbasics.aspx", "http://www.talkenglish.com/speaking/listregular.aspx", "https://www.newsinlevels.com/", "https://www.memrise.com/course/342958/tu-vung-toeic-quan-trong-cap-1/"]
+	link = ["rong-chang.com/supereasy/", "http://www.talkenglish.com/", "https://www.newsinlevels.com/", "https://www.memrise.com/"]
 
 	for i in link:
 		webbrowser.open_new_tab(i)
@@ -48,7 +48,7 @@ def main():
 		#after 3 hours, I must learn English about 3 hours
 		if datetime.datetime.now().hours == hour+3: # copy file host consist of ip name and hostname to prevent open facebook.com and youtube.com ^^
 			try:
-				os.system('copy C:\\Users\\DUCTRONG_PC\\Desktop\\hosts C:\\Windows\\System32\\drivers\\etc')
+				os.system('hosts C:\\Windows\\System32\\drivers\\etc')
 			except Exception as e:
 				print str(e)
 			finally:
