@@ -1,85 +1,123 @@
-import random
+# 19/12/2017
+from random import randint
 
-def get_primes(n):
-  numbers = set(range(n, 1, -1))
-  primes = []
-  while numbers:
-    p = numbers.pop()
-    primes.append(p)
-    numbers.difference_update(set(range(p*2, n+1, p)))
-  return primes
+# First, I will transfer message to list include number ascii of each of character of message
+# After i encrypt that list => list include some number is encrypt
+# m: initial message 
+# e,n: public key
+# c: data has been encrypted
+# d: private key, is large number, multiplication of 2 prime numbers, it is very secure.
 
-# primeslist = get_primes(1000)
-primeslist = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 521, 523, 541, 547, 557, 563, 569, 571, 577, 991, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 409, 929, 419, 421, 937, 941, 431, 433, 947, 439, 953, 443, 449, 967, 457, 971, 461, 463, 977, 467, 983, 479, 997, 487, 491, 499, 503, 509]
+# check this number is prime
+def is_prime(n):
+    """ Check if n is a prime number
 
-#==================================================================
+    @params:
+    :n: integer number
 
-def getStats():
-  p = primeslist[random.randint(0,167)]
-  q = primeslist[random.randint(0,167)]
-  n = p*q
-  phi = (p-1)*(q-1)
-  e = 17
-   
-  return (n, phi, e)
+    @returns: Boolean, True if n is prime number
+             else False
+    """
+    return all(n%div and n%(div+2) for div in xrange(2, int(n**0.5)+1))
 
-"""
+def init():
+	p = randint(50, 1000)
+	while not is_prime(p):
+		p = randint(50, 1000)
 
-This code was in effort to keep e from being a factor of phi.
-Was later just replaced with a larger prime number for e. (17)
+	# p # q
+	q = randint(50, 1000)
+	while not is_prime(q) or p == q:
+		q = randint(50, 1000)
 
- if phi%3 != 0:
-  e = 3
-  
- if phi%5 != 0:
-  e = 5
-  
- if phi%7 != 0:
-  e = 7
- 
-"""
+	n = p*q
 
-statsTuple = getStats()
+	phi_n = (p-1)*(q-1)
 
-def getPrivateKey():
-  newPhi = statsTuple[1]
-  newE = statsTuple[2]
-  def euclid(num1, num2, num3, num4):
-    if num3 ==1:
-      key = num4
-      return key
-    else:
-      newNum3 = num1 - ((num1//num3)*num3)
-      newNum4 = (num2 - (num4*(num1//num3)))%newPhi
-      return euclid (num3, num4, newNum3, newNum4)
-  return euclid(newPhi, newPhi, newE, 1)
- 
+	return p,q,n,phi_n
 
-privateKey = getPrivateKey()
+# create private key d
+def creat_private_key(phi_n, e):
+	# out = []
+	for i in range(10000):
+		x = ((i * phi_n) + 1) / e
+		y = (e * x) % phi_n
+		if y == 1:
+			# out.append(x)
+			return x
+	# return out
+	# explanation: 
+	# e*d mod phi(n) = 1
+	# ex: 10 % 3 = 1
+	# 		10 / 3 =3
+	#		3*3+1=10
+	#	e*d / phi(n) = ? => d = (?*phi(n)+1)/e
+	#	e*d % phi(n) == 1 => d=...
 
-def encrypt(message): #<a class="yt-simple-endpoint style-scope yt-formatted-string" href="/results?search_query=%23returns">#returns</a> list of each char, encrpyted
-  cipherList = []
-  for ltr in message:
-    encrpytedLtr = (ord(ltr)**statsTuple[2]) % statsTuple[0]
-    cipherList.append(encrpytedLtr)
-  return cipherList
- 
-def decrypt(cipherTextList):
-  d = int(input("What's the private key?"))
-  if d == privateKey:
-    message = []
-    for item in cipherTextList:
-      decryptedLtr = chr((item**d) % statsTuple[0])
-      message.append(decryptedLtr)
-     
-    print("Message:", ''.join(message))
-    
-  else:
-    print("Invalid key")
+# create public key e,n
+def create_public_key(phi_n):
+	# 1 < e < phi(n) and (e and phi_n are coprime)
+	while True:
+		# for i in list(range(2,phi_n)):
+		i = randint(2, phi_n)
+		if phi_n % i == 0:
+			continue
+		else:
+			return i
+
+# formula: m**e mod n = c => c=?
+def encrypt(m,e,n):
+	out = []
+	try:
+		for i in m:
+			out.append( (i**e) % n )
+	except Exception as e:
+		pass
+
+	return "".join(str(i) for i in out), out
+
+# formula: c**d mod n = m => m=?
+# c is list
+def decrypt(c,d,n):
+	out = []
+	for i in c:
+		out.append( (i**d) % n )
+
+	return "".join(str(i) for i in out),out
+	
+# transfer list[ord(character of messages)] => list[number of character after it Sencrypt]
+def transfer_ascii(str_input):
+	lst_ouput = []
+	for i in str_input:
+		lst_ouput.append(ord(i))
+	return lst_ouput
 
 if __name__ == "__main__":
-  print primeslist
-	# print getPrivateKey()
-	# print encrypt("Hihi")
-	# c = encrypt("Hihi")
-	# decrypt(c)
+	p,q,n,phi_n = init()
+	e = create_public_key(phi_n)
+	
+	# e != d. If not, error
+	d = creat_private_key(phi_n, e)
+	if e == d:
+		while e == d:
+			d = creat_private_key(phi_n, e)
+	while d == None:
+		p,q,n,phi_n = init()
+		d = creat_private_key(phi_n, e)
+	print p,q,n,phi_n
+	print e, d
+
+
+	lst_transfer = transfer_ascii("Hello I am AJack Ti")
+
+	print lst_transfer
+
+	# # encrypt
+	str_encrypt, list_encrypt = encrypt(lst_transfer, e, n)
+	print str_encrypt
+	print list_encrypt
+
+	# # decrypt
+	str_decrypt, list_decrypt = decrypt(list_encrypt, d, n)
+	print "decrypt:=> " + "".join(chr(i) for i in list_decrypt)	
+# MY CODE IS VERY SLOW. BEACAUSE OF KEY IS SO BIG. HAHA
