@@ -2,6 +2,8 @@ from os import walk
 import os
 import argparse
 
+vidext = ['.avi', '.mkv', '.wmv', '.mp4', '.mpg', '.mpeg', '.mov', '.m4v']
+
 def downloadSub(listPathFileMP4): # Auto download sub
     for file in listPathFileMP4:
         os.system("autosub " + file.replace(" ", "\ "))
@@ -10,7 +12,7 @@ def listAllFileMP4(directory): # Get file name of folder.
     listPathFileMP4 = []
     for dirname, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            if filename.endswith(".mp4"):
+            if filename in vidext:
                 listPathFileMP4.append( os.path.join(dirname, filename))
     return listPathFileMP4
 
