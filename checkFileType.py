@@ -17,7 +17,12 @@ def checkFileType(arrFile):
     for item in arrFile:
         itemFileType = '.' + item.split('\\')[len(item.split('\\'))-1].split('.')[len(item.split('\\')[len(item.split('\\'))-1].split('.'))-1]
         if itemFileType in fileTypeNotSupport or itemFileType in [i.lower() for i in fileTypeNotSupport]:
-            removeFile(item)
+            try:
+                removeFile(item)
+                print "[+] Remove File Success " + str(item)
+            except:
+                print "[-] Remove File Fail" + str(item)
+    print "[+] Done"
 
 def removeFile(pathFile):
     os.remove(pathFile)
