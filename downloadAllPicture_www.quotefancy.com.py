@@ -18,7 +18,7 @@ for link in listResult:
     html_page = urllib2.urlopen(link)
     soup = BeautifulSoup(html_page)
     for sublink in soup.findAll('a'):
-        if str(sublink.get('href')).endswith('wallpaper.jpg'):
+        if str(sublink.get('href')).endswith('.jpg'):
             url = "https://quotefancy.com" + str(sublink.get('href'))
             print "Downloading ..." + url
             r = requests.get(url)
